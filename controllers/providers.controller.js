@@ -1,77 +1,99 @@
-const providerService = require('../services/providers.service')
+const providerServices = require('../services/providers.service')
 
 // GET
-const getProviders = async (req, res) => {
+const getProvider = async (req, res) => {
+    let providers;
     try {
-        const providers = await providerService.getAllProviders();
+        if (req.query.companyName) {
+            providers = await providerServices.getProviderByName(req.query.companyName);
+        }
+        else {
+            providers = await providerServices.getAllProvider();
+        }
+        if (!providers) {
+            return res.status(404).json({ message: 'Providers not found' });
+        }
         res.status(200).json(providers);
-    } catch (err) {
-        res.status(500).json({
-            message: "Error al obtener proveedores",
-            error: err.message
-        });
+    } catch (error) {
+        console.error(`ERROR: ${error.stack}`);
+        res.status(500).json({ msj: `ERROR: ${error.stack}` });
     }
 };
 
 // POST 
 const createProvider = async (req, res) => {
     try {
-        const newProvider = await providerService.createProvider(req.body);
+        const { companyName, CIF, address, url_web } = req.body;
+        if (!companyName || !CIF || !address || !url_web) {
+            res.status(400).json({ msj: "Missing necessary data" });
+        }
+        let newProvider = await providerServices.createProvider(
+            companyName,
+            CIF,
+            address,
+            url_web
+        );
         res.status(201).json({
-            message: "proveedor creado",
-            provider: newProvider
+            msj: "Provider saved",
+            data: newProvider
         });
-    } catch (err) {
-        res.status(400).json({
-            message: "Error al crear proveedor",
-            error: err.message
-        });
+    } catch (error) {
+        console.error(`ERROR: ${error.stack}`);
+        res.status(500).json({ msj: `ERROR: ${error.stack}` });
     }
 };
 
 // PUT 
 const updateProvider = async (req, res) => {
-    const { _id, ...updateData } = req.body;
-
     try {
-        const updated = await providerService.updateProvider(_id, updateData);
-        res.status(200).json({
-            message: `proveedor actualizado: ${updated.companyName}`,
-            provider: updated
+        const { companyName, CIF, address, url_web } = req.body;
+
+        if (!companyName || !CIF || !address || !url_web) {
+            return res.status(400).json({ msj: "Missing necessary data" });
+        }
+
+        const providerData = { companyName, CIF, address, url_web };
+        const updatedProvider = await providerServices.updateProvider(providerData);
+
+        if (!updatedProvider) {
+            return res.status(404).json({ msj: "Provider not found" });
+        }
+
+        return res.status(200).json({
+            msj: "Provider updated",
+            data: updatedProvider
         });
-    } catch (err) {
-        res.status(400).json({
-            message: "Error al actualizar proveedor",
-            error: err.message
-        });
+    } catch (error) {
+        console.error(`ERROR: ${error.stack}`);
+        return res.status(500).json({ msj: `ERROR: ${error.stack}` });
     }
 };
 
-// DELETE 
-const deleteProvider = async (req, res) => {
-    const { _id } = req.body;
 
+// DELETE 
+// controllers/providers.controller.js
+const deleteProvider = async (req, res) => {
     try {
-        const deleted = await providerService.deleteProvider(_id);
-        if (!deleted) {
-            return res.status(404).json({
-                message: `No se encontró el proveedor: ${_id}`
-            });
+        const { companyName } = req.body;
+        if (!companyName) {
+            return res.status(400).json({ msj: "Missing valid name" });
         }
 
-        res.status(200).json({
-            message: `Se ha borrado el proveedor: ${_id}`
-        });
-    } catch (err) {
-        res.status(400).json({
-            message: "Error al borrar proveedor",
-            error: err.message
-        });
+        const deleted = await providerServices.deleteProvider(companyName);
+
+        if (!deleted) {
+            return res.status(404).json({ msj: `No provider found with name: ${companyName}` });
+        }
+
+        return res.status(200).json({ msj: `Provider: ${companyName} was successfully deleted` });
+    } catch (error) {
+        console.error(`ERROR: ${error.stack}`);
+        return res.status(500).json({ msj: `ERROR: ${error.stack}` });
     }
 };
 
 module.exports = {
-    getProviders,
+    getProvider,
     createProvider,
     updateProvider,
     deleteProvider

@@ -1,14 +1,9 @@
-const {
-    getAllProducts,
-    createProduct,
-    updateProduct,
-    deleteProduct
-} = require("../services/products.service");
+const productService = require("../services/products.service");
 
 // [GET] Obtener todos los productos con populate
-const getProductsController = async (req, res) => {
+const getAllProducts = async (req, res) => {
     try {
-        const products = await getAllProducts();
+        const products = await productService.getAllProducts();
         res.status(200).json(products);
     } catch (err) {
         res.status(500).json({
@@ -19,9 +14,10 @@ const getProductsController = async (req, res) => {
 };
 
 // [POST] Crear nuevo producto
-const createProductController = async (req, res) => {
+
+const createProduct = async (req, res) => {
     try {
-        const newProduct = await createProduct(req.body);
+        const newProduct = await productService.createProduct(req.body);
         res.status(201).json({
             message: "producto creado",
             product: newProduct
@@ -34,12 +30,13 @@ const createProductController = async (req, res) => {
     }
 };
 
+
 // [PUT] Actualizar un producto
-const updateProductController = async (req, res) => {
+const updateProduct = async (req, res) => {
     const { _id, ...updateData } = req.body;
 
     try {
-        const updated = await updateProduct(_id, updateData);
+        const updated = await productService.updateProduct(_id, updateData);
         res.status(200).json({
             message: `producto actualizado: ${updated.title}`,
             product: updated
@@ -53,11 +50,11 @@ const updateProductController = async (req, res) => {
 };
 
 // [DELETE] Eliminar producto por título
-const deleteProductController = async (req, res) => {
+const deleteProduct = async (req, res) => {
     const { title } = req.body;
 
     try {
-        const deleted = await deleteProduct(title);
+        const deleted = await productService.deleteProduct(title);
         if (!deleted) {
             return res.status(404).json({
                 message: `No se encontró el producto: ${title}`
@@ -76,8 +73,8 @@ const deleteProductController = async (req, res) => {
 };
 
 module.exports = {
-    getProductsController,
-    createProductController,
-    updateProductController,
-    deleteProductController
+    getAllProducts,
+    createProduct,
+    updateProduct,
+    deleteProduct
 };

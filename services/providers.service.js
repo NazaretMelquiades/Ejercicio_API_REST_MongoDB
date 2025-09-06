@@ -1,32 +1,43 @@
 const Provider = require('../models/provider.model');
 
 // GET
-const getAllProviders = async () => {
-    return await Provider.find();
-}
+const getAllProvider = async () => {
+    return await Provider.find({}, "-__v");
+};
+
+const getProviderByName = async (companyName) => {
+    return await Provider.find({ companyName }, "-__v");
+};
 
 // CREATE
-const createProvider = async (dataProvider) => {
-    const provider = new Provider(dataProvider);
+const createProvider = async (
+    companyName,
+    CIF,
+    address,
+    url_web
+) => {
+    const provider = new Provider({
+        companyName,
+        CIF,
+        address,
+        url_web
+    });
     return await provider.save();
 };
 
-// UPDATE
-const updateProvider = async (id, dataProvider) => {
-    return await Provider.findByIdAndUpdate(id, dataProvider, { new: true });
+const updateProvider = async (providerData) => {
+    const { companyName, CIF, address, url_web } = providerData;
+
+    return await Provider.findOneAndUpdate({ companyName }, providerData, { new: true });
 };
 
-// DELETE
-const deleteProvider = async (id) => {
-    return await Provider.findByIdAndDelete(id);
+const deleteProvider = async (companyName) => {
+    return await Provider.findOneAndDelete({ companyName });
 };
-
-// const deleteProvider = async (companyName) => {
-//     return await Provider.findOneAndDelete({ companyName });
-// }
 
 module.exports = {
-    getAllProviders,
+    getAllProvider,
+    getProviderByName,
     createProvider,
     updateProvider,
     deleteProvider

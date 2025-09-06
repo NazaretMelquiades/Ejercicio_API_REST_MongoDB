@@ -3,7 +3,7 @@ const router = express.Router();
 const providersController = require("../controllers/providers.controller");
 
 // GET
-router.get("/", providersController.getProviders);
+router.get("/", providersController.getProvider);
 
 // POST
 router.post("/", providersController.createProvider);

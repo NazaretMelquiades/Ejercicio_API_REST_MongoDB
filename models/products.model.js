@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Provider = require("./provider.model");
 require("../config/db_mongo");
 
 const objectSchema = {
@@ -49,45 +48,8 @@ async function saveProduct(
     console.log(result);
 }
 
-module.exports = {
-    Product,
-    saveProduct
-}; // Exportar el modelo y la función para crear productos
+module.exports = Product; // Exportar el modelo y la función para crear productos
 
-// saveProduct(
-//     "Tortilla de patatas",
-//     1.5,
-//     "Cafe jugosa del teatro",
-//     "La casa de las flores"
-// );
 
-// //crear otro pruducto para la casa de las plantas
-// createProduct(
-//     2,
-//     "Ensalada de tomate",
-//     2.5,
-//     "Cafe jugosa del teatro",
-//     "https://www.recetasderechupete.com/wp-content/uploads/2020/11/Tortilla-de-patatas-4-1200x828.jpg",
-//     "La casa de las plantas"
-// );
-
-// saveProduct(
-//     "Barrita tomate",
-//     1.80,
-//     "Cafe jugosa del teatro",
-//     "La casa de las plantas"
-// );
-
-// const p = new Product({
-//     title: "Barrita tomate",
-//     price: 1.80,
-//     description: "Cafe jugosa del teatro",
-//     companyName: 'hola'
-// });
-
-// Guardar en la BBDD
-// p.save()
-//     .then((data) => console.log(data))
-//     .catch(err => console.log(err))
 
 
